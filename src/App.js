@@ -4,6 +4,7 @@ import './App.css';
 import * as firebase from 'firebase/app';
 import 'firebase/database';
 import RoomList from './components/RoomList';
+import MessageList from './components/MessageList';
 
 // Initialize Firebase
 var config = {
@@ -17,15 +18,26 @@ var config = {
 firebase.initializeApp(config);
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {activeRoom: ""};
+    this.activeRoom = this.activeRoom.bind(this);
+  }
+
+  activeRoom(room) {
+    this.setState({activeRoom: room });
+  }
+
   render() {
+    const showMessages = this.state.activeRoom;
     return (
       <div className="App">
-        <header>
-          <h1>Bloc Chat</h1>
-        </header>
-        <main>
-          <RoomList firebase={firebase} />
-        </main>
+        <h1>{this.state.activeRoom.title || "Select A Room"}</h1>
+        <RoomList firebase={firebase} activeRoom={this.activeRoom} />
+        { showMessages ?
+        (<MessageList firebase={firebase} activeRoom={this.state.activeRoom.key}/>)
+        : (null)
+        }
       </div>
     );
   }
